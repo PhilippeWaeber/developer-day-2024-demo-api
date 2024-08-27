@@ -1,3 +1,5 @@
+using Demo.Api.Data;
+using Demo.Api.Data.Models;
 using Serilog;
 using Serilog.Events;
 
@@ -20,6 +22,9 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
+    builder.Services.AddWeatherForecastDbContext(
+        builder.Configuration.GetConnectionString("WeatherForecastDbContext")!);
+
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
@@ -38,25 +43,42 @@ try
     };
 
     app.MapGet("/weatherforecast",
-               (ILogger<WeatherForecast> logger) =>
+               async (WeatherForecastDbContext dbContext,
+                   ILogger<WeatherForecast> logger) =>
                {
-                   var forecast = Enumerable.Range(1, 5)
+                   var forecasts = Enumerable.Range(1, 5)
                        .Select(index =>
-                                   new WeatherForecast(
-                                       DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                                       Random.Shared.Next(-20, 55),
-                                       summaries[Random.Shared.Next(summaries.Length)]
-                                   ))
+                                   new WeatherForecast
+                                   {
+                                       Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                                       TemperatureC = Random.Shared.Next(-20, 55),
+                                       Summary = summaries[Random.Shared.Next(summaries.Length)]
+                                   })
                        .ToList();
 
-                   logger.LogDebug("Generated weather forecast: {@forecast}", forecast);
+                   logger.LogDebug("Generated weather forecast: {@forecast}", forecasts);
 
-                   return forecast;
+                   var requestedOn = DateTime.Now;
+                   foreach (var forecast in forecasts)
+                   {
+                       dbContext.WeatherForecastRequests
+                           .Add(new WeatherForecastRequest
+                           {
+                               WeatherForecast = forecast,
+                               RequestedBy = Environment.UserName,
+                               RequestedOn = requestedOn
+                           });
+                   }
+                   await dbContext.SaveChangesAsync();
+
+                   return forecasts;
                })
         .WithName("GetWeatherForecast")
         .WithOpenApi();
 
     Log.Information("Finished configuring Demo.API. Run it.");
+
+    app.EnsureDatabaseCreated();
 
     app.Run();
 }
@@ -67,9 +89,4 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
-}
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
