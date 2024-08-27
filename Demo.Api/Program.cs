@@ -49,7 +49,7 @@ try
                                    ))
                        .ToList();
 
-                   logger.LogDebug("Generated weather forecast: {forecast}", forecast);
+                   logger.LogDebug("Generated weather forecast: {@forecast}", forecast);
 
                    return forecast;
                })
