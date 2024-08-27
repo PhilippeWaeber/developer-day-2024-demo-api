@@ -6,6 +6,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
     .WriteTo.Console()
+    .WriteTo.Seq("http://localhost:5341")
     .CreateLogger();
 
 try
