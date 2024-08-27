@@ -10,6 +10,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Api.Tests.Integration"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Api.Tests.Component", "Demo.Api.Tests.Component\Demo.Api.Tests.Component.csproj", "{6AE3E0EC-862D-4AE1-9B2F-5627779D9931}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{58439D3E-37AC-4ED7-BAEC-37CFAE6E2F9F}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F43E942D-318D-45D8-9102-600AC3D0A87C}
