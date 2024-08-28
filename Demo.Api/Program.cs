@@ -1,21 +1,16 @@
 using Demo.Api.Data;
 using Demo.Api.Data.Models;
 using Serilog;
-using Serilog.Events;
+
+var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
-    .WriteTo.Console()
-    .WriteTo.Seq("http://localhost:5341")
+    .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 
 try
 {
     Log.Information("Start configuring Demo.API");
-
-    var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddSerilog();
 
